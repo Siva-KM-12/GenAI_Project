@@ -24,13 +24,12 @@ Before you begin, ensure you have the following installed:
 *   **pip** (Python package installer)
 *   **Ollama:** A platform for running large language models locally. Download and install it from [ollama.com](https://ollama.com/ ).
 
-### 1. Clone the Repository (or extract the archive)
-
-If you received this project as an archive, extract it to your desired location. If it's a Git repository, clone it:
 ## IMPLEMENTATION SCREENSHOTS
 <img width="1912" height="883" alt="image" src="https://github.com/user-attachments/assets/f4914ac2-d4af-4db2-b020-d3cc02a64829" />
 <img width="752" height="862" alt="image" src="https://github.com/user-attachments/assets/543c9003-d04c-44e9-9ce4-a101d6bd2530" />
 <img width="753" height="835" alt="image" src="https://github.com/user-attachments/assets/1fdc3763-cc31-490a-af23-452fc0cd8391" />
+
+
 ## VIDEO LINK
 [Video link ](https://drive.google.com/file/d/1Aa3RiPbxFcGfTGR6FvOCAfz1LYsqZ-Uq/view?usp=sharing)
 
