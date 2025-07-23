@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce AI Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .input-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        #questionInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        #questionInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #askButton {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #askButton:hover {
+            transform: translateY(-2px);
+        }
+
+        #askButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sample-questions {
+            margin-top: 20px;
+        }
+
+        .sample-questions p {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .sample-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sample-btn {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .sample-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .response-section {
+            padding: 30px;
+            display: none;
+        }
+
+        .status-indicator {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .status-indicator.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-indicator.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .answer-display, .error-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .error-display {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .visualization-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .visualization-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .sample-buttons {
+                justify-content: center;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 E-commerce AI Agent</h1>
+            <p>Ask questions about your e-commerce data and get instant insights with visualizations</p>
+        </header>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="questionInput" placeholder="Ask a question about your data...">
+                <button id="askButton">Generate Chart</button>
+            </div>
+            
+            <div class="sample-questions">
+                <p>Try these sample questions:</p>
+                <div class="sample-buttons">
+                    <button class="sample-btn" data-question="What is my total sales?">Total Sales</button>
+                    <button class="sample-btn" data-question="Show me the top 10 products by sales">Top Products</button>
+                    <button class="sample-btn" data-question="Which product had the highest CPC?">Highest CPC</button>
+                    <button class="sample-btn" data-question="Calculate the RoAS">Calculate RoAS</button>
+                    <button class="sample-btn" data-question="What is the total ad spend?">Total Ad Spend</button>
+                    <button class="sample-btn" data-question="Show me the total clicks">Total Clicks</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Processing your question...</p>
+        </div>
+        
+        <div class="response-section" id="responseSection">
+            <div class="status-indicator" id="statusIndicator">Success</div>
+            
+            <div class="answer-display" id="answerDisplay">
+                <h3>Answer:</h3>
+                <p id="displayAnswer"></p>
+            </div>
+            
+            <div class="error-display" id="errorDisplay" style="display: none;">
+                <h3>Error:</h3>
+                <p id="displayError"></p>
+            </div>
+            
+            <div class="visualization-container" id="visualizationContainer" style="display: none;">
+                <h3>Visualization:</h3>
+                <img id="visualizationImage" src="" alt="Data Visualization">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionInput = document.getElementById('questionInput');
+            const askButton = document.getElementById('askButton');
+            const responseSection = document.getElementById('responseSection');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const statusIndicator = document.getElementById('statusIndicator');
+            
+            const answerDisplay = document.getElementById('answerDisplay');
+            const displayAnswer = document.getElementById('displayAnswer');
+            const visualizationContainer = document.getElementById('visualizationContainer');
+            const visualizationImage = document.getElementById('visualizationImage');
+            const errorDisplaySection = document.getElementById('errorDisplay'); // This is the div element
+            const displayErrorMessageElement = document.getElementById('displayError'); // This is the <p> tag inside the div
+            
+            const sampleButtons = document.querySelectorAll('.sample-btn');
+            
+            // Add click event listeners to sample question buttons
+            sampleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    questionInput.value = question;
+                    askQuestion();
+                });
+            });
+            
+            // Add event listeners
+            askButton.addEventListener('click', askQuestion);
+            questionInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    askQuestion();
+                }
+            });
+            
+            function askQuestion() {
+                const question = questionInput.value.trim();
+                if (!question) {
+                    alert('Please enter a question');
+                    return;
+                }
+                
+                showLoading();
+                hideResponse();
+                
+                const requestData = {
+                    question: question,
+                    visualize: true
+                };
+                
+                fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    displayResults(data);
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Error:', error);
+                    // Call the function with the correct element and message
+                    showError('Network error: ' + error.message);
+                });
+            }
+            
+            function displayResults(data) {
+                responseSection.style.display = 'block';
+                
+                if (data.success) {
+                    statusIndicator.textContent = 'Success';
+                    statusIndicator.className = 'status-indicator success';
+                    
+                    if (data.answer) {
+                        displayAnswer.textContent = data.answer;
+                        answerDisplay.style.display = 'block';
+                    } else {
+                        answerDisplay.style.display = 'none';
+                    }
+                    
+                    if (data.visualization) {
+                        visualizationImage.src = data.visualization + '?t=' + new Date().getTime();
+                        visualizationContainer.style.display = 'block';
+                    } else {
+                        visualizationContainer.style.display = 'none';
+                    }
+                    
+                    errorDisplaySection.style.display = 'none';
+                } else {
+                    statusIndicator.textContent = 'Error';
+                    statusIndicator.className = 'status-indicator error';
+                    
+                    // Call the function with the correct message
+                    showError(data.error || 'Unknown error occurred');
+                    
+                    answerDisplay.style.display = 'none';
+                    visualizationContainer.style.display = 'none';
+                }
+            }
+            
+            // Renamed function to avoid confusion and simplified its purpose
+            function showError(message) {
+                displayErrorMessageElement.textContent = message;
+                errorDisplaySection.style.display = 'block';
+                
+                responseSection.style.display = 'block'; // Ensure response section is visible
+                statusIndicator.textContent = 'Error';
+                statusIndicator.className = 'status-indicator error';
+                
+                answerDisplay.style.display = 'none';
+                visualizationContainer.style.display = 'none';
+            }
+            
+            function showLoading() {
+                loadingIndicator.style.display = 'block';
+                askButton.disabled = true;
+                askButton.textContent = 'Processing...';
+            }
+            
+            function hideLoading() {
+                loadingIndicator.style.display = 'none';
+                askButton.disabled = false;
+                askButton.textContent = 'Generate Chart';
+            }
+            
+            function hideResponse() {
+                responseSection.style.display = 'none';
+            }
+        });
+    </script>
+
+
+</body>
+</html>
+
